@@ -1,0 +1,4 @@
+rootProject.name = 'game-platform'
+include 'server'
+include 'web'
+

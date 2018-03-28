@@ -1,0 +1,30 @@
+package com.luming.service;
+
+
+import com.luming.model.pojo.UserDO;
+
+/**
+ * @author ming.lu@insentek.com
+ * @date 2018/3/14
+ * 修正历史：
+ * 	2018/3/14：文件创建
+ */
+public interface UserService {
+    /**
+     * 用户注册
+     * @param name
+     * @param email
+     * @param password
+     * @return
+     */
+    Boolean saveUserDo(String name, String email, String password);
+    
+    
+    /**
+     * 用户登录
+     * @param email
+     * @param password
+     * @return
+     */
+    UserDO login(String email, String password);
+}

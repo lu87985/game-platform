@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":web" external.linked.project.path="$MODULE_DIR$/../../../game-platform/web" external.root.project.path="$MODULE_DIR$/../../../game-platform" external.system.id="GRADLE" external.system.module.group="game-platform" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../game-platform/web">
+      <excludeFolder url="file://$MODULE_DIR$/../../../game-platform/web/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../game-platform/web/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../game-platform/web/out" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../game-platform/web/script" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
