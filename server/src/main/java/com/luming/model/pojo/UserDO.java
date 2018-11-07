@@ -19,6 +19,9 @@ public class UserDO {
     String name;
     String email;
     String password;
+    String mobile;
+    Integer age;
+    Integer roleId;
     
     public UserDO() {
     }
@@ -61,5 +64,35 @@ public class UserDO {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    
+    public String getMobile() {
+        return mobile;
+    }
+    
+    
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+    
+    
+    public Integer getAge() {
+        return age;
+    }
+    
+    
+    public void setAge(Integer age) {
+        this.age = age;
+    }
+    
+    
+    public Integer getRoleId() {
+        return roleId;
+    }
+    
+    
+    public void setRoleId(Integer roleId) {
+        this.roleId = roleId;
     }
 }

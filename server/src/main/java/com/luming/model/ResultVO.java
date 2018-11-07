@@ -7,24 +7,32 @@ package com.luming.model;
  */
 public class ResultVO<T> {
 
-    private Boolean status;
+    private Integer status;
     private String info;
-    private T data;
+    private Object data;
 
     public ResultVO() {
     }
 
-    public ResultVO(Boolean status, String info, T data) {
+    public ResultVO(Integer status, String info, Object data) {
         this.status = status;
         this.info = info;
         this.data = data;
     }
+    
+    public static ResultVO success(String info, Object data) {
+        return new ResultVO(10000, info, data);
+    }
+    
+    public static ResultVO error(String info, Object data) {
+        return new ResultVO(10001, info, data);
+    }
 
-    public Boolean getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -36,11 +44,11 @@ public class ResultVO<T> {
         this.info = info;
     }
 
-    public T getData() {
+    public Object getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(Object data) {
         this.data = data;
     }
 }

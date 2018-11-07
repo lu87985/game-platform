@@ -3,8 +3,6 @@ package com.luming.filter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -22,12 +20,11 @@ import java.util.List;
 @Component
 @WebFilter(filterName = "adminFilter", urlPatterns = "/")
 public class AdminFilter implements Filter {
-    
-    @Value("${session_key}")
+    @Value("USER_LOGIN")
     private String SESSION_KEY;
-    @Value("${session_time}")
+    @Value("7200000")
     private String SESSION_TIME;
-    @Value("#{'${checkUrls}'.split(',')}")
+    @Value("#{'/'.split(',')}")
     private List<String> checkUrls;
     
     
@@ -43,18 +40,25 @@ public class AdminFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String uri = request.getRequestURI();
         String url = request.getRequestURL().toString();
-        AntPathMatcher pathMatcher = new AntPathMatcher();
-        for (String pattern : checkUrls) {
-            if (pathMatcher.match(pattern, uri)) {
-                Jedis jedis = new Jedis();
-                String sessionKey = jedis.get(SESSION_KEY);
-                if (sessionKey == null) {
-                
-                }
-            }
-            System.out.println("filter doFilter");
-        }
-        
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+//        AntPathMatcher pathMatcher = new AntPathMatcher();
+//        for (String pattern : checkUrls) {
+//            if (pathMatcher.match(pattern, uri)) {
+//                Jedis jedis = new Jedis();
+//                String sessionKey = jedis.get(SESSION_KEY);
+//                if (sessionKey == null) {
+//
+//                }
+//            }
+//            System.out.println("filter doFilter");
+//        }
+        chain.doFilter(servletRequest,servletResponse);
+    
+    
     }
     
     

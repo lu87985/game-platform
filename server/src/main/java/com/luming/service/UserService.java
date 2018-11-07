@@ -2,6 +2,7 @@ package com.luming.service;
 
 
 import com.luming.model.pojo.UserDO;
+import org.springframework.stereotype.Service;
 
 /**
  * @author ming.lu@insentek.com
@@ -9,6 +10,7 @@ import com.luming.model.pojo.UserDO;
  * 修正历史：
  * 	2018/3/14：文件创建
  */
+@Service
 public interface UserService {
     /**
      * 用户注册

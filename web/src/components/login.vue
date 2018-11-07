@@ -9,11 +9,11 @@
             <div class="loginName">
               <span>{{$t('login.info.loginName')}}</span>
             </div>
-            <input type="text" class="">
+            <input type="text" class="" v-model="username">
             <div class="loginName">
               <span>{{$t('login.info.password')}}</span>
             </div>
-            <input type="password" class="">
+            <input type="password" class="" v-model="password">
           </div>
           <div class="loginBox-sep"></div>
           <div class="loginBox-right">
@@ -22,7 +22,8 @@
             <p>{{$t('login.info.register')}}</p>
           </div>
           <div class="loginBox-left but">
-            <button class="login-button">{{$t('title.login')}}</button>
+            <button class="login-button" @click="toLogin">{{$t('title.login')}}</button>
+            <span v-if="!status">登录失败</span>
           </div>
           <div class="loginBox-right but">
             <a class="toRight"><span>{{$t('login.title.toRegister')}}</span></a>
@@ -34,8 +35,32 @@
 </template>
 
 <script>
+import { login } from "../api/user"
 export default {
-  name: 'Login'
+  name: 'Login',
+  data(){
+    return {
+      username: '',
+      password: '',
+      status: this.$route.params.status
+    }
+  },
+  methods: {
+    toLogin(){
+      const params = {
+        username: this.username,
+        password: this.password
+      }
+      login(params).then(res => {
+        console.log(res);
+        if (res.data.status) {
+          this.$router.push('/helloWorld')
+        } else {
+          alert(res.data.data)
+        }
+      })
+    }
+  }
 }
 </script>
 <style scoped>
