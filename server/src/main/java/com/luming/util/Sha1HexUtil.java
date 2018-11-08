@@ -24,7 +24,10 @@ public class Sha1HexUtil implements PasswordEncoder{
      */
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (DigestUtils.sha1Hex(rawPassword.toString()).equals(encodedPassword)) {
+        String password = encodedPassword.split("@")[0];
+        String salt = encodedPassword.split("@")[1];
+        String pwd = DigestUtils.sha1Hex(salt + rawPassword);
+        if (pwd.equals(password)) {
             return true;
         } else {
             return false;

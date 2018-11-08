@@ -2,6 +2,7 @@ package com.luming.service;
 
 
 import com.luming.model.pojo.UserDO;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,4 +30,14 @@ public interface UserService {
      * @return
      */
     UserDO login(String email, String password);
+    
+    
+    /**
+     * 修改用户
+     * @param name
+     * @param mobile
+     * @param age
+     * @return
+     */
+    Boolean updataUser(String name, String mobile, Integer age, Authentication authenticator);
 }

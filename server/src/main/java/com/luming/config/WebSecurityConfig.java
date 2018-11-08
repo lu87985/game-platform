@@ -1,7 +1,9 @@
 package com.luming.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luming.dao.UserDao;
 import com.luming.model.ResultVO;
+import com.luming.model.VO.UserVO;
 import com.luming.util.Sha1HexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +43,9 @@ import java.io.PrintWriter;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
-    public MyUserDetailService userDetailsService;
+    private UserDao userDao;
+    @Autowired
+    public AdminUserDetailService adminUserDetailService;
     
     
     @Bean
@@ -51,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Autowired
     protected void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(this.passwordEncoder());
+        auth.userDetailsService(adminUserDetailService).passwordEncoder(this.passwordEncoder());
     }
     /**
      * http请求安全处理
@@ -64,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // 我们指定任何用户都可以访问多个URL的模式。
                 // 任何用户都可以访问以"/resources/","/signup", 或者 "/about"开头的URL。
-                .antMatchers("/api/admin/**").permitAll()
+//                .antMatchers("/api/admin/**").permitAll()
                 // 以 "/admin/" 开头的URL只能让拥有 "ROLE_ADMIN"角色的用户访问。
                 // 请注意我们使用 hasRole 方法，没有使用 "ROLE_" 前缀。
 //                .antMatchers("/api/**").hasRole("USER")
@@ -77,7 +81,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 // 指定登录页的路径
-                // formLogin().permitAll()方法允许所有用户基于表单登录访问/login登录页
                 .formLogin().loginPage("http://localhost:3000/login")
                 .loginProcessingUrl("/api/admin/login")
                 // 登录成功后跳转到/main页面
@@ -120,7 +123,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                                         HttpServletResponse resp,
                                                         Authentication auth) throws IOException {
                         resp.setContentType("application/json;charset=utf-8");
-                        ResultVO resultVO = ResultVO.success(null, auth.getDetails());
+                        UserVO user = (UserVO) auth.getPrincipal();
+                        ResultVO resultVO = ResultVO.success(null, userDao.findUserDOByEmail(user.getUsername()));
                         ObjectMapper om = new ObjectMapper();
                         PrintWriter out = resp.getWriter();
                         out.write(om.writeValueAsString(resultVO));
@@ -128,21 +132,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         out.close();
                     }
                 })
+                // 允许所有用户基于表单登录访问/login登录页
                 .permitAll()
                 .and()
                 //开启cookie储存用户信息，并设置有效期为14天，指定cookie中的密钥
-//                .rememberMe().tokenValiditySeconds(1209600).key("Authentication")
-//                .and()
-                .logout()
-                //指定登出的url
-                .logoutUrl("/logout")
-                //指定登出成功之后跳转的url
-                .logoutSuccessUrl("/")
-                .permitAll()
+                .rememberMe().tokenValiditySeconds(1209600).key("Authentication")
+                .and()
+                .logout().permitAll()
                 .and()
                 .cors()
-                .and()
-                .csrf().disable();
+                .and().csrf().disable();
+//                .logout()
+//                //指定登出的url
+//                .logoutUrl("/api/admin/logout")
+//                //指定登出成功之后跳转的url
+//                .logoutSuccessUrl("/api/admin/logout")
+//                .deleteCookies("Authentication")
+//                .and()
+//                .cors()
+//                .and()
+//                .csrf().disable();
     
     }
     

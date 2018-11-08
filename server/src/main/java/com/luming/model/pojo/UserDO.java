@@ -19,6 +19,7 @@ public class UserDO {
     String name;
     String email;
     String password;
+    String salt;
     String mobile;
     Integer age;
     Integer roleId;
@@ -66,6 +67,13 @@ public class UserDO {
         this.password = password;
     }
     
+    public String getSalt() {
+        return salt;
+    }
+    
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
     
     public String getMobile() {
         return mobile;

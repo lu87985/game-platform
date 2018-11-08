@@ -2,20 +2,16 @@ package com.luming.config;
 
 import com.luming.dao.RoleDao;
 import com.luming.dao.UserDao;
+import com.luming.model.VO.UserVO;
 import com.luming.model.pojo.RoleDO;
 import com.luming.model.pojo.UserDO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * @author ming.lu@insentek.com
@@ -24,8 +20,8 @@ import java.util.HashSet;
  * 	2018/11/6：文件创建
  */
 @Component
-public class MyUserDetailService implements UserDetailsService {
-    Logger log = LoggerFactory.getLogger(MyUserDetailService.class);
+public class AdminUserDetailService implements UserDetailsService {
+    Logger log = LoggerFactory.getLogger(AdminUserDetailService.class);
     
     @Autowired
     UserDao userDao;
@@ -36,20 +32,19 @@ public class MyUserDetailService implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDO userEntity = userDao.findUserDOByEmail(username);
-        if (userEntity == null) {
+        UserDO user = userDao.findUserDOByEmail(username);
+        RoleDO role;
+        if (user == null) {
             throw new UsernameNotFoundException("用户名：" + username + "不存在！");
+        } else {
+            role = roleDao.findRoleDOById(user.getId());
+            if (role == null) {
+                throw new UsernameNotFoundException("roleName " + username + " not found");
+            }
         }
-        String password = userEntity.getPassword();
-//        String password = DigestUtils.sha1Hex(userEntity.getPassword());
+        String password = user.getPassword() + "@" + user.getSalt();
         log.info(password);
-        
-        
-        Collection<SimpleGrantedAuthority> collection = new HashSet<SimpleGrantedAuthority>();
-        RoleDO roleDO = roleDao.findRoleDOById(userEntity.getId());
-        collection.add(new SimpleGrantedAuthority(roleDO.getRoleName()));
-        /*return new User(username, password, AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_ADMIN"));*/
-        return new User(username, password, collection);
+        user.setPassword(password);
+        return new UserVO(user, role);
     }
-    
 }
