@@ -1,7 +1,4 @@
 import axios from 'axios'
-// import baseURL from '_conf/url'
-
-// import Cookies from 'js-cookie'
 import qs from 'qs'
 
 

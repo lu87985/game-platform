@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { login } from "../api/user"
+import {mapActions} from 'vuex'
 export default {
   name: 'Login',
   data(){
@@ -46,18 +46,16 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'handleLogin'
+    ]),
     toLogin(){
       const params = {
         username: this.username,
         password: this.password
       }
-      login(params).then(res => {
-        console.log(res);
-        if (res.data.status) {
+      this.handleLogin({...params}).then(res => {
           this.$router.push('/helloWorld')
-        } else {
-          alert(res.data.data)
-        }
       })
     }
   }
