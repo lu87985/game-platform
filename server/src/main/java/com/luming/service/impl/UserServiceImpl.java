@@ -1,11 +1,9 @@
 package com.luming.service.impl;
 
 import com.luming.dao.UserDao;
-import com.luming.model.VO.UserVO;
 import com.luming.model.pojo.UserDO;
 import com.luming.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 /**
@@ -40,18 +38,4 @@ public class UserServiceImpl implements UserService {
         return userDO;
     }
     
-    
-    @Override
-    public Boolean updataUser(String name, String mobile, Integer age, Authentication authenticator) {
-        UserVO userVO = (UserVO) authenticator.getPrincipal();
-        UserDO user = userDao.findUserDOById(userVO.getId());
-        if (user != null) {
-            user.setName(name);
-            user.setMobile(mobile);
-            user.setAge(age);
-            //TODO ming.lu.insentek, 2018/11/7, []
-            return true;
-        }
-        return null;
-    }
 }
