@@ -70,10 +70,10 @@ public class RewirteResourceServerConfigurerAdapter extends ResourceServerConfig
                 .failureHandler(loginAuthenticationFailureHandler).and()
                 .exceptionHandling().authenticationEntryPoint(new AuthExceptionEntryPoint());
         http.requestMatchers()
-                .antMatchers("/api/**")
+                .antMatchers("/")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/**")
+                .antMatchers("/")
                 .authenticated();
     }
     

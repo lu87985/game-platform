@@ -1,7 +1,8 @@
 package com.luming.config.security;
 
 import com.luming.config.AdminUserDetailService;
-import com.luming.dao.UserDao;
+import com.luming.dao.UserJpa;
+import com.luming.filter.RewritrFilterSecurityInterceptor;
 import com.luming.util.Sha1HexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
 /**
  * @author ming.lu@insentek.com
@@ -24,10 +26,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     
     @Autowired
-    private UserDao userDao;
+    private UserJpa userDao;
     @Autowired
     public AdminUserDetailService adminUserDetailService;
     
+    @Autowired
+    private RewritrFilterSecurityInterceptor filterSecurityInterceptor;
     
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -46,10 +50,12 @@ public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAd
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 通过authorizeRequests()方法来开始请求权限配置
-        http.requestMatchers().antMatchers("/oauth/**")
-                .and()
+        http
                 .authorizeRequests()
-                .antMatchers("/oauth/**").permitAll();
+                .antMatchers("/oauth/**").permitAll()
+                .and()
+                .addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class)
+                .csrf().disable();
 //                        .and()
 //                        // 指定登录页的路径
 //                        .formLogin().loginPage("http://localhost:3000/login")

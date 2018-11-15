@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * 修正历史：
  * 	2018/11/6：文件创建
  */
-public interface RoleDao extends JpaRepository<RoleDO, Integer> {
+public interface RoleJpa extends JpaRepository<RoleDO, Integer> {
 
     RoleDO findRoleDOById(Integer userId);
 }

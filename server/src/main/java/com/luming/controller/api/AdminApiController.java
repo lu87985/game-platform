@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 修正历史：
  * 	2018/11/6：文件创建
  */
-@RequestMapping("/api/admin/")
+@RequestMapping("/user")
 @RestController
 public class AdminApiController {
     

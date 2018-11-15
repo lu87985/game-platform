@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * 修正历史：
  * 	2018/3/14：文件创建
  */
-public interface UserDao extends JpaRepository<UserDO, Integer> {
+public interface UserJpa extends JpaRepository<UserDO, Integer> {
 
     UserDO findUserDOById(Integer id);
     

@@ -1,8 +1,10 @@
 package com.luming.config;
 
-import com.luming.dao.RoleDao;
-import com.luming.dao.UserDao;
+import com.luming.dao.PermissionJpa;
+import com.luming.dao.RoleJpa;
+import com.luming.dao.UserJpa;
 import com.luming.model.VO.UserVO;
+import com.luming.model.pojo.PermissionDO;
 import com.luming.model.pojo.RoleDO;
 import com.luming.model.pojo.UserDO;
 import org.slf4j.Logger;
@@ -12,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author ming.lu@insentek.com
@@ -24,27 +28,33 @@ public class AdminUserDetailService implements UserDetailsService {
     Logger log = LoggerFactory.getLogger(AdminUserDetailService.class);
     
     @Autowired
-    UserDao userDao;
+    UserJpa userJpa;
     
     @Autowired
-    RoleDao roleDao;
+    RoleJpa roleJpa;
+    
+    @Autowired
+    PermissionJpa permissionJpa;
     
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDO user = userDao.findUserDOByEmail(username);
+        UserDO user = userJpa.findUserDOByEmail(username);
         RoleDO role;
+        List<PermissionDO> list;
         if (user == null) {
             throw new UsernameNotFoundException("用户名：" + username + "不存在！");
         } else {
-            role = roleDao.findRoleDOById(user.getId());
+            role = roleJpa.findRoleDOById(user.getId());
             if (role == null) {
                 throw new UsernameNotFoundException("roleName " + username + " not found");
+            } else {
+                list = permissionJpa.findPermissionListByRoleId(role.getId());
             }
         }
         String password = user.getPassword() + "@" + user.getSalt();
         log.info(password);
         user.setPassword(password);
-        return new UserVO(user, role);
+        return new UserVO(user, role, list);
     }
 }

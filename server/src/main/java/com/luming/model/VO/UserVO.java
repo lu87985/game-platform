@@ -1,5 +1,6 @@
 package com.luming.model.VO;
 
+import com.luming.model.pojo.PermissionDO;
 import com.luming.model.pojo.RoleDO;
 import com.luming.model.pojo.UserDO;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author ming.lu@insentek.com
@@ -24,6 +26,7 @@ public class UserVO implements UserDetails {
     String mobile;
     Integer age;
     RoleDO roleDO;
+    List<PermissionDO> permissionList;
     
     public UserVO(UserDO user) {
         if (user != null) {
@@ -36,7 +39,7 @@ public class UserVO implements UserDetails {
         }
     }
     
-    public UserVO(UserDO user, RoleDO role) {
+    public UserVO(UserDO user, RoleDO role, List<PermissionDO> permissionList) {
         if (user != null) {
             this.setId(user.getId());
             this.setName(user.getName());
@@ -47,6 +50,9 @@ public class UserVO implements UserDetails {
         }
         if (role != null) {
             this.roleDO = role;
+        }
+        if (permissionList != null && permissionList.size() > 0) {
+            this.permissionList = permissionList;
         }
     }
     
@@ -116,16 +122,27 @@ public class UserVO implements UserDetails {
     }
     
     
+    public List<PermissionDO> getPermissionList() {
+        return permissionList;
+    }
+    
+    
+    public void setPermissionList(List<PermissionDO> permissionList) {
+        this.permissionList = permissionList;
+    }
+    
+    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        if (roleDO != null) {
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(roleDO.getRoleName());
-            authorities.add(authority);
+        if (permissionList != null && permissionList.size() > 0) {
+            for (PermissionDO permissionDO: permissionList) {
+                GrantedAuthority authority = new SimpleGrantedAuthority(permissionDO.getUrl());
+                authorities.add(authority);
+            }
         }
         return authorities;
     }
-    
     
     @Override
     public String getPassword() {
