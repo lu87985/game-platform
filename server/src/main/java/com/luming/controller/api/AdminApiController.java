@@ -1,12 +1,10 @@
 package com.luming.controller.api;
 
+import com.luming.controller.handler.SecurityUserInfoHandler;
 import com.luming.model.ResultVO;
 import com.luming.model.VO.UserVO;
 import com.luming.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,9 +30,7 @@ public class AdminApiController {
     @RequestMapping(value = "info", method = RequestMethod.GET)
     public ResultVO userInfo() {
         ResultVO resultVO;
-        SecurityContext ctx = SecurityContextHolder.getContext();
-        Authentication auth = ctx.getAuthentication();
-        UserVO user = (UserVO) auth.getPrincipal();
+        UserVO user = SecurityUserInfoHandler.getCurrentPrincipal();
         if (user == null) {
             resultVO = ResultVO.error(null, "失败");
         }else {
