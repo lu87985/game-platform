@@ -16,6 +16,7 @@ public class SecurityUserInfoHandler {
      * @return
      */
     public static Authentication getCurrentUserAuthentication(){
+        System.out.println("用户信息 : " + SecurityContextHolder.getContext().getAuthentication());
         return SecurityContextHolder.getContext().getAuthentication();
     }
     

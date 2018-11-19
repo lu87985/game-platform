@@ -58,23 +58,27 @@ public class RewirteResourceServerConfigurerAdapter extends ResourceServerConfig
     
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.formLogin()
-                //登录页面，app用不到
-                //.loginPage("/authentication/login")
-                //登录提交action，app会用到
-                // 用户名登录地址
-//                .loginProcessingUrl("//token")
-                //成功处理器 返回Token
-                .successHandler(loginAuthenticationSuccessHandler)
-                //失败处理器
-                .failureHandler(loginAuthenticationFailureHandler).and()
-                .exceptionHandling().authenticationEntryPoint(new AuthExceptionEntryPoint());
-        http.requestMatchers()
-                .antMatchers("/")
+//        http.formLogin()
+//                登录页面，app用不到
+//                .loginPage("/authentication/login")
+////                登录提交action，app会用到
+////                 用户名登录地址
+//                .loginProcessingUrl("/user/login")
+////                成功处理器 返回Token
+//                .successHandler(loginAuthenticationSuccessHandler)
+//                //失败处理器
+//                .failureHandler(loginAuthenticationFailureHandler).and()
+//                .exceptionHandling().authenticationEntryPoint(new AuthExceptionEntryPoint());
+//        http.requestMatchers()
+//                .antMatchers("/")
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/")
+//                .authenticated();
+        http.requestMatchers().antMatchers("/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/")
-                .authenticated();
+                .antMatchers("/**").authenticated();
     }
     
     @Override

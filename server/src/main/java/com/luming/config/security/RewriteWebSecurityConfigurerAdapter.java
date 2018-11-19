@@ -1,19 +1,19 @@
 package com.luming.config.security;
 
 import com.luming.config.AdminUserDetailService;
-import com.luming.dao.UserJpa;
-import com.luming.filter.RewritrFilterSecurityInterceptor;
 import com.luming.util.Sha1HexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+
+import java.util.Arrays;
 
 /**
  * @author ming.lu@insentek.com
@@ -26,22 +26,51 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     
     @Autowired
-    private UserJpa userDao;
-    @Autowired
     public AdminUserDetailService adminUserDetailService;
     
-    @Autowired
-    private RewritrFilterSecurityInterceptor filterSecurityInterceptor;
     
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Sha1HexUtil();
     }
     
-    @Autowired
-    protected void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(adminUserDetailService).passwordEncoder(this.passwordEncoder());
+//    @Autowired
+//    protected void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.userDetailsService(adminUserDetailService).passwordEncoder(this.passwordEncoder());
+//    }
+    
+    
+    /**
+     * 创建DaoAuthenticationProvider认证的bean
+     * @return
+     */
+    @Bean
+    DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        //加密用的
+        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(adminUserDetailService);
+        return daoAuthenticationProvider;
     }
+    
+    /**
+     * 认证
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        //会进行多种方式认证，当第一种不成功时会进行第二种认证
+        //多个认证方式
+        ProviderManager authenticationManager = new ProviderManager(Arrays.asList(daoAuthenticationProvider()));
+        //不擦除认证密码，擦除会导致TokenBasedRememberMeServices因为找不到Credentials再调用UserDetailsService而抛出UsernameNotFoundException
+        //验证后设置擦除凭证
+        authenticationManager.setEraseCredentialsAfterAuthentication(false);
+        return authenticationManager;
+    }
+    
     /**
      * http请求安全处理
      * @param http
@@ -50,70 +79,10 @@ public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAd
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 通过authorizeRequests()方法来开始请求权限配置
-        http
-                .authorizeRequests()
-                .antMatchers("/oauth/**").permitAll()
+        http.requestMatchers().antMatchers("/oauth/**")
                 .and()
-                .addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class)
-                .csrf().disable();
-//                        .and()
-//                        // 指定登录页的路径
-//                        .formLogin().loginPage("http://localhost:3000/login")
-//                        .loginProcessingUrl("/api/admin/login")
-//                        .failureHandler(new AuthenticationFailureHandler() {
-//                            @Override
-//                            public void onAuthenticationFailure(HttpServletRequest req,
-//                                                                HttpServletResponse resp,
-//                                                                AuthenticationException e) throws IOException {
-//                                resp.setContentType("application/json;charset=utf-8");
-//                                ResultVO resultVO;
-//                                if (e instanceof BadCredentialsException ||
-//                                        e instanceof UsernameNotFoundException) {
-//                                    resultVO = ResultVO.error(null,"账户名或者密码输入错误!");
-//                                } else if (e instanceof LockedException) {
-//                                    resultVO = ResultVO.error(null,"账户被锁定，请联系管理员!");
-//                                } else if (e instanceof CredentialsExpiredException) {
-//                                    resultVO = ResultVO.error(null,"密码过期，请联系管理员!");
-//                                } else if (e instanceof AccountExpiredException) {
-//                                    resultVO = ResultVO.error(null,"账户过期，请联系管理员!");
-//                                } else if (e instanceof DisabledException) {
-//                                    resultVO = ResultVO.error(null,"账户被禁用，请联系管理员!");
-//                                } else {
-//                                    resultVO = ResultVO.error(null,"登录失败!");
-//                                }
-//                                ObjectMapper om = new ObjectMapper();
-//                                PrintWriter out = resp.getWriter();
-//                                out.write(om.writeValueAsString(resultVO));
-//                                out.flush();
-//                                out.close();
-//                            }
-//                        });
-        //                // 登录成功的方法
-        //                .successHandler(new AuthenticationSuccessHandler() {
-        //                    @Override
-        //                    public void onAuthenticationSuccess(HttpServletRequest req,
-        //                                                        HttpServletResponse resp,
-        //                                                        Authentication auth) throws IOException {
-        //                        resp.setContentType("application/json;charset=utf-8");
-        //                        UserVO user = (UserVO) auth.getPrincipal();
-        //                        ResultVO resultVO = ResultVO.success(null, userDao.findUserDOByEmail(user.getUsername()));
-        //                        ObjectMapper om = new ObjectMapper();
-        //                        PrintWriter out = resp.getWriter();
-        //                        out.write(om.writeValueAsString(resultVO));
-        //                        out.flush();
-        //                        out.close();
-        //                    }
-        //                })
-        //                // 允许所有用户基于表单登录访问/login登录页
-        //                .permitAll()
-        //                .and()
-        //                //开启cookie储存用户信息，并设置有效期为14天，指定cookie中的密钥
-        //                .rememberMe().tokenValiditySeconds(1209600).key("Authentication")
-        //                .and()
-        //                .logout().permitAll()
-        //                .and()
-        //                .cors()
-        //                .and().csrf().disable();
+                .authorizeRequests()
+                .antMatchers("/oauth/**").permitAll();
     }
     
     /**
@@ -122,10 +91,10 @@ public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAd
      * @return
      * @throws Exception
      */
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+//    @Override
+//    @Bean
+//    public AuthenticationManager authenticationManagerBean() throws Exception {
+//        return super.authenticationManagerBean();
+//    }
     
 }

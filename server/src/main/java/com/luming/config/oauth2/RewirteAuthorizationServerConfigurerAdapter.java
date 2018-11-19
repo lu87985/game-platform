@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
@@ -29,20 +29,28 @@ public class RewirteAuthorizationServerConfigurerAdapter extends AuthorizationSe
     private AdminUserDetailService userDetailsService;
     @Autowired
     private TokenStore tokenStore;
-    @Autowired
-    private WebResponseExceptionTranslator customWebResponseExceptionTranslator;
     
-    @Autowired
-    public RewirteAuthorizationServerConfigurerAdapter(AdminUserDetailService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    
+//    @Autowired
+//    public RewirteAuthorizationServerConfigurerAdapter(AdminUserDetailService userDetailsService) {
+//        this.userDetailsService = userDetailsService;
+//    }
+    
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
+        oauthServer
+                //url:/oauth/token_key,exposes public key for token verification if using JWT tokens
+                .tokenKeyAccess("permitAll()")
+                //url:/oauth/check_token allow check token
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients();
     }
     
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore)
                 .authenticationManager(authenticationManager)
-                .userDetailsService(userDetailsService)
-                .exceptionTranslator(customWebResponseExceptionTranslator);
+                .userDetailsService(userDetailsService);
     }
     
     @Override
