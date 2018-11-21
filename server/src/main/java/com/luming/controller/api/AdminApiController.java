@@ -1,14 +1,16 @@
 package com.luming.controller.api;
 
-import com.luming.controller.handler.SecurityUserInfoHandler;
+import com.alibaba.fastjson.JSONObject;
+import com.luming.config.session.SessionConfig;
 import com.luming.model.ResultVO;
-import com.luming.model.VO.UserVO;
 import com.luming.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author ming.lu@insentek.com
@@ -28,13 +30,13 @@ public class AdminApiController {
      * 当前登录人信息
      * @return
      */
-    @RequestMapping(value = "info", method = RequestMethod.GET)
-    public ResultVO userInfo() {
+    @RequestMapping(value = "info")
+    public ResultVO getSession(HttpServletRequest request) {
         ResultVO resultVO;
-        UserVO user = SecurityUserInfoHandler.getCurrentPrincipal();
+        JSONObject user = SessionConfig.getSession(request);
         if (user == null) {
             resultVO = ResultVO.error(null, "失败");
-        }else {
+        } else {
             resultVO = ResultVO.success("成功", user);
         }
         return resultVO;
@@ -48,13 +50,13 @@ public class AdminApiController {
      * @param email
      * @return
      */
-    @RequestMapping(value = "register", method = RequestMethod.POST)
+    @RequestMapping(value = "update", method = RequestMethod.POST)
     public ResultVO registerUser(@RequestParam String name, @RequestParam String password, @RequestParam String email) {
         ResultVO resultVO;
         Boolean result = userService.saveUserDo(name, email, password);
         if (result) {
             resultVO = ResultVO.success(null, "成功");
-        }else {
+        } else {
             resultVO = ResultVO.error(null, "失败");
         }
         return resultVO;

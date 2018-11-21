@@ -28,19 +28,13 @@ public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAd
     @Autowired
     public AdminUserDetailService adminUserDetailService;
     
-    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new Sha1HexUtil();
     }
     
-//    @Autowired
-//    protected void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(adminUserDetailService).passwordEncoder(this.passwordEncoder());
-//    }
-    
-    
     /**
+     * 数据库验证
      * 创建DaoAuthenticationProvider认证的bean
      * @return
      */
@@ -79,22 +73,9 @@ public class RewriteWebSecurityConfigurerAdapter extends WebSecurityConfigurerAd
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 通过authorizeRequests()方法来开始请求权限配置
-        http.requestMatchers().antMatchers("/oauth/**")
+        http.requestMatchers().antMatchers("/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/oauth/**").permitAll();
+                .antMatchers("/**").authenticated();
     }
-    
-    /**
-     * 需要配置这个支持password模式 support password grant type
-     *
-     * @return
-     * @throws Exception
-     */
-//    @Override
-//    @Bean
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
-    
 }

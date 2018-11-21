@@ -1,6 +1,9 @@
 package com.luming.controller.handler;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.luming.config.session.SessionConfig;
+import com.luming.model.VO.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -51,7 +54,7 @@ public class LoginAuthenticationSuccessHandler extends SavedRequestAwareAuthenti
     
         if (clientDetails == null) {
             throw new UnapprovedClientAuthenticationException("clientId对应的配置信息不存在：" + clientId);
-        } else if (clientSecret != null && clientSecret.equals(clientDetails.getClientSecret())) {
+        } else if (clientSecret != null && !clientSecret.equals(clientDetails.getClientSecret())) {
             throw new UnapprovedClientAuthenticationException("clientSecret不匹配：" + clientId);
         }
     
@@ -63,7 +66,17 @@ public class LoginAuthenticationSuccessHandler extends SavedRequestAwareAuthenti
         OAuth2Authentication auth2Authentication = new OAuth2Authentication(auth2Request, authentication);
     
         OAuth2AccessToken token = authorizationServerTokenServices.createAccessToken(auth2Authentication);
-    
+        UserVO userVO = (UserVO) authentication.getPrincipal();
+        // 封装用户对象，存入Spring session中
+        JSONObject userJson = new JSONObject();
+        userJson.put("id", userVO.getId());
+        userJson.put("email", userVO.getEmail());
+        userJson.put("name", userVO.getName());
+        userJson.put("mobile", userVO.getMobile());
+        userJson.put("roleId", userVO.getRoleDO().getId());
+        userJson.put("roleName", userVO.getRoleDO().getRoleName());
+        userJson.put("permissionList", userVO.getPermissionList());
+        SessionConfig.setSession(request, token.getTokenType() + " " + token.getValue(), userJson, true);
         response.setContentType("application/json;charset=UTF-8");
         ObjectMapper om = new ObjectMapper();
         response.getWriter().write(om.writeValueAsString(token));

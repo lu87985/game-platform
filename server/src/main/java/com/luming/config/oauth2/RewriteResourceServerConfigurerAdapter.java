@@ -11,14 +11,18 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 /**
+ * 资源服务器
  * @author ming.lu@insentek.com
  * @date 2018/11/15
  * 修正历史：
  * 	2018/11/15：文件创建
  */
 @Configuration
+/**
+ * 表明为资源服务器
+ */
 @EnableResourceServer
-public class RewirteResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
+public class RewriteResourceServerConfigurerAdapter extends ResourceServerConfigurerAdapter {
     
     @Autowired
     protected AuthenticationSuccessHandler loginAuthenticationSuccessHandler;
@@ -58,24 +62,19 @@ public class RewirteResourceServerConfigurerAdapter extends ResourceServerConfig
     
     @Override
     public void configure(HttpSecurity http) throws Exception {
-//        http.formLogin()
+        http.formLogin()
 //                登录页面，app用不到
-//                .loginPage("/authentication/login")
-////                登录提交action，app会用到
-////                 用户名登录地址
-//                .loginProcessingUrl("/user/login")
-////                成功处理器 返回Token
-//                .successHandler(loginAuthenticationSuccessHandler)
-//                //失败处理器
-//                .failureHandler(loginAuthenticationFailureHandler).and()
-//                .exceptionHandling().authenticationEntryPoint(new AuthExceptionEntryPoint());
-//        http.requestMatchers()
-//                .antMatchers("/")
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/")
-//                .authenticated();
-        http.requestMatchers().antMatchers("/**")
+                .loginPage("/authentication/login")
+//                登录提交action，app会用到
+//                 用户名登录地址
+                .loginProcessingUrl("/login")
+//                成功处理器 返回Token
+                .successHandler(loginAuthenticationSuccessHandler)
+                //失败处理器
+                .failureHandler(loginAuthenticationFailureHandler).and()
+                .exceptionHandling().authenticationEntryPoint(new AuthExceptionEntryPoint());
+        http.requestMatchers()
+                .antMatchers("/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/**").authenticated();

@@ -27,8 +27,8 @@ public class SessionConfig {
     }
     
     //将Session的Json格式作为内容存入Redis,cover选择是覆盖还是追加
-    public static void setSession(HttpServletRequest request, JSONObject content, boolean cover) {
-        String token = getSessionToken(request);
+    public static void setSession(HttpServletRequest request, String token, JSONObject content, boolean cover) {
+//        String token = getSessionToken(request);
         if (cover) {
             request.getSession().setAttribute(token, content);
         } else {
@@ -51,7 +51,7 @@ public class SessionConfig {
         request.getSession().setAttribute(token, content);
     }
     
-    //获取s0ession的某个key的值
+    //获取session的某个key的值
     public static String getSessionValue(HttpServletRequest request, String key) {
         JSONObject content = getSessionCreate(request, true);
         if (content.keySet().size() != 0) {
@@ -94,7 +94,7 @@ public class SessionConfig {
     
     //获取session的token（作为此session的key）
     private static String getSessionToken (HttpServletRequest request) {
-       return request.getHeader("token");
+       return request.getHeader("Authorization");
     }
     
     //直接获取session（无逻辑处理，已经经过判断此session存在）

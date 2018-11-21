@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * 登录成功执行的方法
+ * 登录失败执行的方法
  * @author ming.lu@insentek.com
  * @date 2018/11/15
  * 修正历史：
@@ -46,5 +46,4 @@ public class LoginAuthenticationFailureHandler extends SimpleUrlAuthenticationFa
         out.flush();
         out.close();
     }
-
 }

@@ -9,19 +9,22 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 /**
+ * 认证服务器
  * @author ming.lu@insentek.com
  * @date 2018/11/15
  * 修正历史：
  * 	2018/11/15：文件创建
  */
 @Configuration
+/**
+ * 表明为认证服务器
+ */
 @EnableAuthorizationServer
-public class RewirteAuthorizationServerConfigurerAdapter extends AuthorizationServerConfigurerAdapter {
+public class RewriteAuthorizationServerConfigurerAdapter extends AuthorizationServerConfigurerAdapter {
     
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -29,22 +32,6 @@ public class RewirteAuthorizationServerConfigurerAdapter extends AuthorizationSe
     private AdminUserDetailService userDetailsService;
     @Autowired
     private TokenStore tokenStore;
-    
-    
-//    @Autowired
-//    public RewirteAuthorizationServerConfigurerAdapter(AdminUserDetailService userDetailsService) {
-//        this.userDetailsService = userDetailsService;
-//    }
-    
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-        oauthServer
-                //url:/oauth/token_key,exposes public key for token verification if using JWT tokens
-                .tokenKeyAccess("permitAll()")
-                //url:/oauth/check_token allow check token
-                .checkTokenAccess("isAuthenticated()")
-                .allowFormAuthenticationForClients();
-    }
     
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
@@ -65,7 +52,7 @@ public class RewirteAuthorizationServerConfigurerAdapter extends AuthorizationSe
                 .scopes("all")
                 .resourceIds("oauth2-resource")
                 //token有效时间  秒
-                .accessTokenValiditySeconds(1200)
+                .accessTokenValiditySeconds(600)
                 .refreshTokenValiditySeconds(50000);
     }
     

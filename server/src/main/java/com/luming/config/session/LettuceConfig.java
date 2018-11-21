@@ -20,7 +20,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * 	2018/11/15：文件创建
  */
 
-@EnableRedisHttpSession
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 600)
 public class LettuceConfig {
     
     
